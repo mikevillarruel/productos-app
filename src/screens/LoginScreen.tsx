@@ -1,10 +1,10 @@
+import { StackScreenProps } from '@react-navigation/stack';
 import React from 'react';
 import { Keyboard, KeyboardAvoidingView, Platform, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Background } from '../components/Background';
 import { WhiteLogo } from '../components/WhiteLogo';
-import { loginStyles } from '../theme/loginTheme';
 import { useForm } from '../hooks/useForm';
-import { StackScreenProps } from '@react-navigation/stack';
+import { loginStyles } from '../theme/loginTheme';
 
 interface Props extends StackScreenProps<any, any> { };
 
@@ -56,8 +56,6 @@ export const LoginScreen = ({ navigation }: Props) => {
 
                         autoCapitalize='none'
                         autoCorrect={false}
-
-
                     />
 
                     <Text style={loginStyles.label}>Password:</Text>
@@ -78,8 +76,6 @@ export const LoginScreen = ({ navigation }: Props) => {
 
                         autoCapitalize='none'
                         autoCorrect={false}
-
-
                     />
 
                     {/* Login Button */}
@@ -97,9 +93,9 @@ export const LoginScreen = ({ navigation }: Props) => {
                     <View style={loginStyles.newUserContainer}>
                         <TouchableOpacity
                             activeOpacity={0.8}
-                            onPress={()=>navigation.replace('RegisterScreen')}
+                            onPress={() => navigation.replace('RegisterScreen')}
                         >
-                            <Text style={loginStyles.buttonText}>Nueva Cuenta</Text>
+                            <Text style={loginStyles.buttonText}>New Account</Text>
                         </TouchableOpacity>
                     </View>
 
