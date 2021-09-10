@@ -1,7 +1,16 @@
 import { NavigationContainer } from '@react-navigation/native';
 import React from 'react';
 import { StatusBar } from 'react-native';
+import { AuthProvider } from './src/context/AuthContext';
 import { Navigator } from './src/navigator/Navigator';
+
+const AppState = ({ children }: any) => {
+  return (
+    <AuthProvider>
+      {children}
+    </AuthProvider>
+  )
+}
 
 const App = () => {
   return (
@@ -11,7 +20,9 @@ const App = () => {
         backgroundColor='rgba(0,0,0,0.3)'
         barStyle='light-content'
       />
-      <Navigator />
+      <AppState>
+        <Navigator />
+      </AppState>
     </NavigationContainer>
   )
 }
