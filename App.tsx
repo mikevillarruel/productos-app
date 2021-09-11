@@ -2,12 +2,15 @@ import { NavigationContainer } from '@react-navigation/native';
 import React from 'react';
 import { StatusBar } from 'react-native';
 import { AuthProvider } from './src/context/AuthContext';
+import { ProductsProvider } from './src/context/ProductsContext';
 import { Navigator } from './src/navigator/Navigator';
 
 const AppState = ({ children }: any) => {
   return (
     <AuthProvider>
-      {children}
+      <ProductsProvider>
+        {children}
+      </ProductsProvider>
     </AuthProvider>
   )
 }
