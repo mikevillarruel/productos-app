@@ -33,7 +33,7 @@ export const AuthProvider = ({ children }: any) => {
 
     const signIn = async ({ correo, password }: LoginData) => {
         try {
-            
+
             const { data: { token, usuario } } = await cafeApi.post<LoginResponse>('/auth/login', {
                 correo,
                 password,
@@ -43,9 +43,13 @@ export const AuthProvider = ({ children }: any) => {
                 type: 'signUp',
                 payload: { token, user: usuario }
             });
-            
+
         } catch (error: any) {
             console.log(error.response.data.msg)
+            dispatch({
+                type: 'addError',
+                payload: error.response.data.msg || 'Incorrect data'
+            })
         }
     }
 
@@ -54,7 +58,7 @@ export const AuthProvider = ({ children }: any) => {
     }
 
     const removeError = () => {
-
+        dispatch({ type: 'removeError' });
     }
 
     return (
