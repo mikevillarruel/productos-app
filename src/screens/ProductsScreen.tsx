@@ -1,7 +1,7 @@
-import React, { useContext, useEffect } from 'react'
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import { ProductsContext } from '../context/ProductsContext';
 import { StackScreenProps } from '@react-navigation/stack';
+import React, { useContext, useEffect, useState } from 'react';
+import { FlatList, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ProductsContext } from '../context/ProductsContext';
 import { ProductsStackParams } from '../navigator/ProductsNavigator';
 
 interface Props extends StackScreenProps<ProductsStackParams, 'ProductsScreen'> { };
@@ -9,6 +9,7 @@ interface Props extends StackScreenProps<ProductsStackParams, 'ProductsScreen'> 
 export const ProductsScreen = ({ navigation }: Props) => {
 
     const { products, loadProducts } = useContext(ProductsContext);
+    const [refreshing, setRefreshing] = useState(false);
 
     useEffect(() => {
         navigation.setOptions({
@@ -24,11 +25,21 @@ export const ProductsScreen = ({ navigation }: Props) => {
         })
     }, [])
 
-    // TODO: Pull to refresh
+    const loadProductsFromBackend = async () => {
+        setRefreshing(true);
+        await loadProducts();
+        setRefreshing(false);
+    }
 
     return (
         <View style={{ flex: 1, marginHorizontal: 10 }}>
             <FlatList
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={loadProductsFromBackend}
+                    />
+                }
                 data={products}
                 keyExtractor={(producto) => producto._id}
                 renderItem={({ item }) => (
