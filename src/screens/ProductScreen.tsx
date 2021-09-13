@@ -1,7 +1,8 @@
 import { Picker } from '@react-native-picker/picker'
 import { StackScreenProps } from '@react-navigation/stack'
-import React, { useContext, useEffect } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { ActivityIndicator, Button, Image, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native'
+import { launchCamera } from 'react-native-image-picker'
 import { ProductsContext } from '../context/ProductsContext'
 import { useCategories } from '../hooks/useCategories'
 import { useForm } from '../hooks/useForm'
@@ -14,7 +15,8 @@ export const ProductScreen = ({ route, navigation }: Props) => {
 
     const { id = '', name = '' } = route.params;
     const { categories, isLoading } = useCategories();
-    const { loadProductById, addProduct, updateProduct } = useContext(ProductsContext);
+    const { loadProductById, addProduct, updateProduct, uploadImage } = useContext(ProductsContext);
+    const [tempUri, setTempUri] = useState<string>();
 
     const { _id, categoriaId, nombre, img, form, onChange, setFormValue } = useForm({
         _id: id,
@@ -41,6 +43,19 @@ export const ProductScreen = ({ route, navigation }: Props) => {
             const newProduct = await addProduct(tempCategoriaId, nombre);
             onChange(newProduct._id, '_id');
         }
+    }
+
+    const takePhoto = () => {
+        launchCamera({
+            mediaType: 'photo',
+            quality: 0.5,
+        }, (resp) => {
+            if (resp.didCancel) return;
+            if (!resp.assets) return;
+            if (!resp.assets[0].uri) return;
+            setTempUri(resp.assets[0].uri);
+            uploadImage(resp.assets[0], id);
+        });
     }
 
     useEffect(() => {
@@ -103,7 +118,7 @@ export const ProductScreen = ({ route, navigation }: Props) => {
 
                             <Button
                                 title='Camera'
-                                onPress={() => { }}
+                                onPress={takePhoto}
                                 color='#5856D6'
                             />
                             <View style={{ width: 10 }} />
@@ -119,9 +134,22 @@ export const ProductScreen = ({ route, navigation }: Props) => {
                 }
 
                 {
-                    (img.length > 0) && (
+                    (img.length > 0 && !tempUri) && (
                         <Image
                             source={{ uri: img }}
+                            style={{
+                                height: 300,
+                                width: '100%',
+                                resizeMode: 'center',
+                            }}
+                        />
+                    )
+                }
+
+                {
+                    (tempUri) && (
+                        <Image
+                            source={{ uri: tempUri }}
                             style={{
                                 height: 300,
                                 width: '100%',
