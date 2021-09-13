@@ -5,7 +5,7 @@ import { Producto, ProductsResponse } from '../interfaces/appInterfaces';
 type ProductsContextProps = {
     products: Producto[];
     loadProducts: () => Promise<void>;
-    addProduct: (categoryId: string, productName: string) => Promise<void>;
+    addProduct: (categoryId: string, productName: string) => Promise<Producto>;
     updateProduct: (categoryId: string, productName: string, productId: string) => Promise<void>;
     deleteProduct: (productId: string) => Promise<void>;
     loadProductById: (id: string) => Promise<Producto>;
@@ -24,15 +24,26 @@ export const ProductsProvider = ({ children }: any) => {
 
     const loadProducts = async () => {
         const response = await cafeApi.get<ProductsResponse>('/productos?limite=50');
-        setProducts([...products, ...response.data.productos]);
+        setProducts([...response.data.productos]);
     }
 
-    const addProduct = async (categoryId: string, productName: string) => {
-
+    const addProduct = async (categoryId: string, productName: string): Promise<Producto> => {
+        const response = await cafeApi.post<Producto>('/productos', {
+            nombre: productName,
+            categoria: categoryId,
+        });
+        setProducts([...products, response.data]);
+        return response.data;
     }
 
     const updateProduct = async (categoryId: string, productName: string, productId: string) => {
-
+        const response = await cafeApi.put<Producto>(`/productos/${productId}`, {
+            nombre: productName,
+            categoria: categoryId,
+        });
+        setProducts(products.map((product) => {
+            return (product._id === productId) ? response.data : product;
+        }));
     }
 
     const deleteProduct = async (productId: string) => {

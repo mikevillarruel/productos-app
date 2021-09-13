@@ -14,7 +14,7 @@ export const ProductScreen = ({ route, navigation }: Props) => {
 
     const { id = '', name = '' } = route.params;
     const { categories, isLoading } = useCategories();
-    const { loadProductById } = useContext(ProductsContext);
+    const { loadProductById, addProduct, updateProduct } = useContext(ProductsContext);
 
     const { _id, categoriaId, nombre, img, form, onChange, setFormValue } = useForm({
         _id: id,
@@ -24,8 +24,8 @@ export const ProductScreen = ({ route, navigation }: Props) => {
     });
 
     const loadProduct = async () => {
-        if (id.length == 0) return;
-        const product: Producto = await loadProductById(id);
+        if (_id.length == 0) return;
+        const product: Producto = await loadProductById(_id);
         setFormValue({
             ...form,
             categoriaId: product.categoria._id,
@@ -33,11 +33,21 @@ export const ProductScreen = ({ route, navigation }: Props) => {
         });
     }
 
+    const saveOrUpdate = async () => {
+        if (_id.length > 0) {
+            updateProduct(categoriaId, nombre, _id);
+        } else {
+            const tempCategoriaId = categoriaId || categories[0]._id;
+            const newProduct = await addProduct(tempCategoriaId, nombre);
+            onChange(newProduct._id, '_id');
+        }
+    }
+
     useEffect(() => {
         navigation.setOptions({
-            title: (name !== '') ? name : 'New Product',
+            title: (nombre !== '') ? nombre : 'Product Name',
         })
-    }, [])
+    }, [nombre])
 
     useEffect(() => {
         loadProduct();
@@ -82,25 +92,31 @@ export const ProductScreen = ({ route, navigation }: Props) => {
 
                 <Button
                     title='Save'
-                    onPress={() => { }}
+                    onPress={saveOrUpdate}
                     color='#5856D6'
                 />
 
-                <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 10 }}>
+                {
+                    (_id.length > 0) && (
 
-                    <Button
-                        title='Camera'
-                        onPress={() => { }}
-                        color='#5856D6'
-                    />
-                    <View style={{ width: 10 }} />
-                    <Button
-                        title='Galery'
-                        onPress={() => { }}
-                        color='#5856D6'
-                    />
+                        <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 10 }}>
 
-                </View>
+                            <Button
+                                title='Camera'
+                                onPress={() => { }}
+                                color='#5856D6'
+                            />
+                            <View style={{ width: 10 }} />
+                            <Button
+                                title='Galery'
+                                onPress={() => { }}
+                                color='#5856D6'
+                            />
+
+                        </View>
+
+                    )
+                }
 
                 {
                     (img.length > 0) && (
