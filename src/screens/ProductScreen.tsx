@@ -2,7 +2,7 @@ import { Picker } from '@react-native-picker/picker'
 import { StackScreenProps } from '@react-navigation/stack'
 import React, { useContext, useEffect, useState } from 'react'
 import { ActivityIndicator, Button, Image, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native'
-import { launchCamera } from 'react-native-image-picker'
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker'
 import { ProductsContext } from '../context/ProductsContext'
 import { useCategories } from '../hooks/useCategories'
 import { useForm } from '../hooks/useForm'
@@ -47,6 +47,19 @@ export const ProductScreen = ({ route, navigation }: Props) => {
 
     const takePhoto = () => {
         launchCamera({
+            mediaType: 'photo',
+            quality: 0.5,
+        }, (resp) => {
+            if (resp.didCancel) return;
+            if (!resp.assets) return;
+            if (!resp.assets[0].uri) return;
+            setTempUri(resp.assets[0].uri);
+            uploadImage(resp.assets[0], id);
+        });
+    }
+
+    const takePhotoFromGallery = () => {
+        launchImageLibrary({
             mediaType: 'photo',
             quality: 0.5,
         }, (resp) => {
@@ -124,7 +137,7 @@ export const ProductScreen = ({ route, navigation }: Props) => {
                             <View style={{ width: 10 }} />
                             <Button
                                 title='Galery'
-                                onPress={() => { }}
+                                onPress={takePhotoFromGallery}
                                 color='#5856D6'
                             />
 
